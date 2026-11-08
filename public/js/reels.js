@@ -1,22 +1,8 @@
-/* Fast Instagram Reel gallery.
-   Only the optimized posters ship with the page. An Instagram iframe is
-   created after an explicit Play action, so the initial page stays light. */
+/* Fast, clean video journal.
+   Only optimized posters ship initially. A direct native video is created
+   after Play, so no Instagram page, caption or interface enters the card. */
 (function () {
   "use strict";
-
-  function warmInstagram() {
-    if (document.getElementById("instagram-preconnect")) return;
-    var dns = document.createElement("link");
-    dns.rel = "dns-prefetch";
-    dns.href = "https://www.instagram.com";
-    var link = document.createElement("link");
-    link.id = "instagram-preconnect";
-    link.rel = "preconnect";
-    link.href = "https://www.instagram.com";
-    link.crossOrigin = "anonymous";
-    document.head.appendChild(dns);
-    document.head.appendChild(link);
-  }
 
   function initReels() {
     var root = document.querySelector("[data-reels]");
@@ -53,8 +39,13 @@
 
     function resetMedia(media) {
       if (!media || media === currentMedia) return;
-      var player = media.querySelector("iframe[data-reel-player]");
-      if (player) player.remove();
+      var player = media.querySelector("video[data-reel-player]");
+      if (player) {
+        player.pause();
+        player.removeAttribute("src");
+        player.load();
+        player.remove();
+      }
       media.classList.remove("is-loading", "is-loaded", "is-unavailable");
       media.removeAttribute("aria-busy");
     }
@@ -63,7 +54,6 @@
 
     function playReel(media, button) {
       if (!media || media.classList.contains("is-loading") || media.classList.contains("is-loaded")) return;
-      warmInstagram();
 
       if (currentMedia && currentMedia !== media) {
         var oldMedia = currentMedia;
@@ -72,10 +62,11 @@
       }
       currentMedia = media;
 
-      /* Instagram lets creators disable website embeds per Reel. For those
-         posts, keep the gallery polished and offer the original Reel instead
-         of rendering Instagram's broken-post error inside the card. */
-      if (button.hasAttribute("data-reel-external")) {
+      var source = button.getAttribute("data-reel-src");
+
+      /* Instagram blocks website playback for these two posts. Their existing
+         polished external fallback remains until their MP4 files are supplied. */
+      if (!source) {
         media.classList.add("is-unavailable");
         return;
       }
@@ -84,31 +75,42 @@
       media.setAttribute("aria-busy", "true");
 
       var reel = button.getAttribute("data-reel-play");
-      var player = document.createElement("iframe");
+      var player = document.createElement("video");
       player.className = "reel-player";
       player.setAttribute("data-reel-player", reel);
-      player.title = button.getAttribute("aria-label") || "Instagram Reel";
-      player.src = "https://www.instagram.com/reel/" + encodeURIComponent(reel) + "/embed/?utm_source=ig_embed";
-      player.allow = "autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share";
-      player.allowFullscreen = true;
-      player.loading = "eager";
-      player.referrerPolicy = "strict-origin-when-cross-origin";
+      player.setAttribute("aria-label", button.getAttribute("aria-label") || "Video");
+      player.src = source;
+      player.preload = "auto";
+      player.autoplay = true;
+      player.controls = true;
+      player.playsInline = true;
+      player.setAttribute("playsinline", "");
+      player.setAttribute("webkit-playsinline", "");
 
-      player.addEventListener("load", function () {
+      function showPlayer() {
         if (!player.isConnected) return;
         media.classList.remove("is-loading");
         media.classList.add("is-loaded");
         media.removeAttribute("aria-busy");
-      });
+      }
+
+      player.addEventListener("playing", showPlayer);
       player.addEventListener("error", function () {
         if (!player.isConnected) return;
         player.remove();
-        media.classList.remove("is-loading", "is-loaded", "is-unavailable");
+        media.classList.remove("is-loading", "is-loaded");
         media.removeAttribute("aria-busy");
         if (currentMedia === media) currentMedia = null;
       });
 
       media.appendChild(player);
+      var playRequest = player.play();
+      if (playRequest && typeof playRequest.catch === "function") {
+        playRequest.catch(function () {
+          /* Native controls remain available if a browser blocks autoplay. */
+          showPlayer();
+        });
+      }
     }
 
     root.addEventListener("click", function (event) {
@@ -119,13 +121,6 @@
       }
       var control = event.target.closest && event.target.closest("[data-reels-prev], [data-reels-next]");
       if (control && !control.disabled) move(control.hasAttribute("data-reels-prev") ? -1 : 1);
-    });
-
-    root.addEventListener("pointerover", function (event) {
-      if (event.target.closest && event.target.closest("[data-reel-play]")) warmInstagram();
-    }, { passive: true });
-    root.addEventListener("focusin", function (event) {
-      if (event.target.closest && event.target.closest("[data-reel-play]")) warmInstagram();
     });
 
     track.addEventListener("keydown", function (event) {

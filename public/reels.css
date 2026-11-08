@@ -355,9 +355,11 @@
   position: absolute;
   z-index: 3;
   inset: 0;
+  display: block;
   width: 100%;
   height: 100%;
-  background: var(--reels-text);
+  object-fit: cover;
+  background: var(--reels-bg-deep);
   border: 0;
   opacity: 0;
 }
