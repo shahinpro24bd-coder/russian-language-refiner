@@ -1829,7 +1829,7 @@ html[lang="bn"] .hero-reference-word {
 
     .hero-reference-word,
     html[lang="bn"] .hero-reference-word {
-        top: 68px;
+        top: 26px;
         width: calc(100% - 28px);
         padding-inline: 14px;
         font-size: clamp(1.28rem, 5.4vw, 1.65rem);
@@ -1838,7 +1838,7 @@ html[lang="bn"] .hero-reference-word {
     }
 
     .hero-reference-copy {
-        top: 148px;
+        top: 168px;
     }
 
     .hero-reference-doctor {
