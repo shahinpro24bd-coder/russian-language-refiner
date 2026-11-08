@@ -1,10 +1,3 @@
-/*
- * Tailwind v4 entry: config lives here, with no tailwind.config.js or PostCSS plugin.
- * - Keep every @import in this top block, above @theme and the rest of the file. Install an
- *   npm package before @importing its CSS. Never @import a remote URL (web fonts, CDN CSS): the
- *   build resolves @import from the filesystem. Load those with a <link> in the head() of
- *   src/routes/__root.tsx and name the family in a --font-* token in @theme inline below.
- */
 @import "tailwindcss" source(none);
 @source "../src";
 @import "tw-animate-css";
@@ -13,10 +6,6 @@
 
 /*
  * Design system definition.
- *
- * The design lives in this file: oklch color tokens on the shadcn variables
- * (--background, --foreground, --primary, --secondary, --muted, --accent, ...) plus
- * new tokens as needed, font tokens, and custom styles and animations.
  *
  * The @theme inline block maps CSS custom properties to Tailwind utility
  * classes (e.g. --color-primary -> bg-primary, text-primary).
@@ -39,6 +28,12 @@
   --radius-4xl: calc(var(--radius) + 16px);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-admin-bar: var(--admin-bar);
+  --color-admin-bar-foreground: var(--admin-bar-foreground);
+  --color-admin-accent: var(--admin-accent);
+  --color-admin-accent-soft: var(--admin-accent-soft);
+  --color-admin-accent-foreground: var(--admin-accent-foreground);
+  --color-admin-canvas: var(--admin-canvas);
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
   --color-popover: var(--popover);
@@ -74,6 +69,12 @@
 
 :root {
   --radius: 0.625rem;
+  --admin-bar: oklch(0.22 0.005 60);
+  --admin-bar-foreground: oklch(0.98 0 0);
+  --admin-accent: oklch(0.64 0.07 60);
+  --admin-accent-soft: oklch(0.95 0.015 60);
+  --admin-accent-foreground: oklch(0.99 0 0);
+  --admin-canvas: oklch(0.975 0 0);
   --background: oklch(1 0 0);
   --foreground: oklch(0.129 0.042 264.695);
   --card: oklch(1 0 0);
