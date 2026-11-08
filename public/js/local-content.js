@@ -114,7 +114,7 @@
       });
     }
     if (c.instagram) {
-      document.querySelectorAll('a[href*="instagram.com"]').forEach(function (a) {
+      document.querySelectorAll('a[href*="instagram.com"]:not([data-instagram-reel-link])').forEach(function (a) {
         a.setAttribute("href", c.instagram);
       });
     }
