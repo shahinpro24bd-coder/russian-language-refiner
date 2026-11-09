@@ -34,7 +34,7 @@ export async function renderSitePage(request: Request, slug: string): Promise<Re
   const cacheKey = `${slug}|${lang}|${snapshot.version}|${url.pathname}`;
   if (!editMode) {
     const cached = RENDER_CACHE.get(cacheKey);
-    if (cached) return htmlResponse(cached, snapshot.version, false);
+    if (cached) return htmlResponse(cached, snapshot.version, false, !isSiteLang(langParam));
   }
 
   const bootstrap =
@@ -77,19 +77,22 @@ export async function renderSitePage(request: Request, slug: string): Promise<Re
     RENDER_CACHE.set(cacheKey, html);
   }
 
-  return htmlResponse(html, snapshot.version, editMode);
+  return htmlResponse(html, snapshot.version, editMode, !isSiteLang(langParam));
 }
 
 /** slug|lang|version|path -> fully rendered HTML */
 const RENDER_CACHE = new Map<string, string>();
 
-function htmlResponse(html: string, version: number | string, editMode: boolean): Response {
+function htmlResponse(html: string, version: number | string, editMode: boolean, usesCookie: boolean): Response {
   return new Response(html, {
     headers: {
       "Content-Type": "text/html; charset=utf-8",
       "Cache-Control": editMode
         ? "no-store"
-        : "public, max-age=300, s-maxage=3600, stale-while-revalidate=86400",
+        : usesCookie
+          ? "private, no-cache"
+          : "public, max-age=300, s-maxage=3600, stale-while-revalidate=86400",
+      "Vary": "Cookie",
       "X-Content-Version": String(version),
     },
   });

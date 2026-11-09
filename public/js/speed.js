@@ -55,8 +55,7 @@
 
   function withLang(url) {
     var lang = window.__SITE_LANG__ || "ru";
-    if (lang === "ru") url.searchParams.delete("lang");
-    else url.searchParams.set("lang", lang);
+    url.searchParams.set("lang", lang);
     return url;
   }
 
@@ -315,8 +314,7 @@
   window.__siteGo = function (href, language) {
     var url = pageUrl(href);
     if (!url || window.__SITE_EDIT__) { location.href = href; return; }
-    if (language === "ru") url.searchParams.delete("lang");
-    else if (language) url.searchParams.set("lang", language);
+    if (language) url.searchParams.set("lang", language);
     else withLang(url);
     swap(url, true);
   };

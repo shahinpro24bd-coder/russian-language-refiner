@@ -28,3 +28,6 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+- Vercel builds use Nitro's Vercel server preset; other builds retain the platform default, because public HTML requires request-time language rendering.
+- Language-switch and internal navigation URLs carry an explicit language; cookie-selected responses are private to prevent cross-language CDN/browser cache reuse.

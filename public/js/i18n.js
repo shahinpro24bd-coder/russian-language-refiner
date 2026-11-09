@@ -31,8 +31,7 @@
       } catch (e) {}
     }
     var url = new URL(window.location.href);
-    if (lang === "ru") url.searchParams.delete("lang");
-    else url.searchParams.set("lang", lang);
+    url.searchParams.set("lang", lang);
     try {
       window.localStorage.setItem("site_lang", lang);
       document.cookie = "site_lang=" + lang + ";path=/;max-age=31536000;SameSite=Lax";
@@ -43,8 +42,7 @@
 
   function languageUrl(lang) {
     var url = new URL(window.location.href);
-    if (lang === "ru") url.searchParams.delete("lang");
-    else url.searchParams.set("lang", lang);
+    url.searchParams.set("lang", lang);
     return url.pathname + url.search + url.hash;
   }
 
@@ -57,8 +55,7 @@
       var url = new URL(raw, window.location.href);
       if (url.origin !== window.location.origin) return;
       var lang = currentLang();
-      if (lang === "ru") url.searchParams.delete("lang");
-      else url.searchParams.set("lang", lang);
+      url.searchParams.set("lang", lang);
       link.href = url.pathname + url.search + url.hash;
     } catch (e) {}
   }
